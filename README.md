@@ -20,14 +20,14 @@ A comprehensive mobile learning application built with React Native and Expo, de
 
 ### 🏆 Achievement System
 
-- First Word 🌟 - Complete your first pronunciation
-- Chat Master 💬 - Complete 10 chat sessions
-- Practice Star ⭐ - Complete 5 practice sessions
-- Word Explorer 🗺️ - Learn 20 unique words
-- Reading Champion 🏆 - Achieve 90% accuracy rate
-- Daily Learner 📚 - Maintain 7-day learning streak
-- Word Master 🎓 - Master 50 words with high accuracy
-- Time Champion ⏰ - Practice for over 5 hours total
+- First Word - Complete your first pronunciation
+- Chat Master - Complete 10 chat sessions
+- Practice Star - Complete 5 practice sessions
+- Word Explorer - Learn 20 unique words
+- Reading Champion - Achieve 90% accuracy rate
+- Daily Learner - Maintain 7-day learning streak
+- Word Master - Master 50 words with high accuracy
+- Time Champion - Practice for over 5 hours total
 
 ### 📊 Comprehensive Analytics
 
