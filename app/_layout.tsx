@@ -1,59 +1,87 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/components/useColorScheme';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { useEffect } from "react";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { View, Text, StyleSheet } from "react-native";
+import { useFrameworkReady } from "@/hooks/useFrameworkReady";
+import { useAuth } from "@/hooks/useAuth";
+import { SettingsProvider } from "@/contexts/SettingsContext";
+import AuthScreen from "@/components/AuthScreen";
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
+  useFrameworkReady();
+  const { user, loading, connectionError } = useAuth();
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
   }
 
-  return <RootLayoutNav />;
-}
+  if (connectionError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorTitle}>Connection Error</Text>
+        <Text style={styles.errorText}>{connectionError}</Text>
+        <Text style={styles.errorHint}>
+          Please check your Supabase configuration in the .env file
+        </Text>
+      </View>
+    );
+  }
 
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  if (!user) {
+    return <AuthScreen />;
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <SettingsProvider>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="+not-found" />
       </Stack>
-    </ThemeProvider>
+      <StatusBar style="auto" />
+    </SettingsProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+  },
+  loadingText: {
+    fontSize: 18,
+    color: "#6B7280",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FEF2F2",
+    padding: 20,
+  },
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#DC2626",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#991B1B",
+    textAlign: "center",
+    marginBottom: 12,
+    lineHeight: 22,
+  },
+  errorHint: {
+    fontSize: 14,
+    color: "#7F1D1D",
+    textAlign: "center",
+    fontStyle: "italic",
+  },
+});
